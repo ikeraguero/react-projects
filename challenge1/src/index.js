@@ -6,7 +6,10 @@ function App() {
   return (
     <div className="card">
       <Avatar photo="./images/iker.jpg" />
-      <Data />
+      <div className="data">
+        <Data />
+        <SkillList />
+      </div>
     </div>
   );
 }
@@ -21,17 +24,12 @@ function Avatar(props) {
 
 function Data() {
   return (
-    <div className="data">
+    <div>
       <h1>Iker Aguero Pires</h1>
       <span>
         Student and aspiring developer. When not coding, I enjoy listen to
         music, being with my friends and watch Formula 1 races.
       </span>
-      <div className="skill-list">
-        <Skill skill="HTML+CSS" color="Blue" emoji="💪" />
-        <Skill skill="JavaScript" color="Yellow" emoji="💪" />
-        <Skill skill="Linux" color="Orange" emoji="💪" />
-      </div>
     </div>
   );
 }
@@ -40,6 +38,16 @@ function Skill(props) {
   return (
     <div className="skill" style={{ backgroundColor: props.color }}>
       {props.skill} {props.emoji}
+    </div>
+  );
+}
+
+function SkillList() {
+  return (
+    <div className="skill-list">
+      <Skill skill="HTML+CSS" color="Blue" emoji="💪" />
+      <Skill skill="JavaScript" color="Yellow" emoji="💪" />
+      <Skill skill="Linux" color="Orange" emoji="💪" />
     </div>
   );
 }
