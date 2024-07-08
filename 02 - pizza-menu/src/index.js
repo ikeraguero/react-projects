@@ -58,12 +58,13 @@ function App() {
 }
 
 function Pizza() {
-  return;
-  <div>
-    <img src="pizzas/spinaci.jpg" alt="Pizza spinaci"></img>
-    <h2>Pizza Spinaci</h2>
-    <p>Tomato, mozarella, spinach, and ricotta cheese</p>
-  </div>;
+  return (
+    <div>
+      <img src="./pizzas/spinaci.jpg" alt="Pizza spinaci"></img>
+      <h2>Pizza Spinaci</h2>
+      <p>Tomato, mozarella, spinach, and ricotta cheese</p>
+    </div>
+  );
 }
 
 // React v18
