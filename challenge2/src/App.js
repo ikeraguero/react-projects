@@ -40,7 +40,13 @@ function Counter() {
         <div>Count: {count}</div>
         <button onClick={handleNextCount}>+</button>
       </div>
-      {`${count} days from now is ${date.toDateString()}`}
+      {`${count !== 0 ? Math.abs(count) : ""} ${
+        count > 0
+          ? "day from now is"
+          : count === 0
+          ? "Today is"
+          : "days ago was"
+      } ${date.toDateString()}`}
     </div>
   );
 }
