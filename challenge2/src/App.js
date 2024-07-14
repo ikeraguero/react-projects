@@ -12,14 +12,6 @@ function Counter() {
   const now = new Date();
   const date = new Date(new Date(now).setDate(now.getDate() + count));
 
-  function handlePreviousStep() {
-    if (step > 1) setStep((s) => s - 1);
-  }
-
-  function handleNextStep() {
-    setStep((s) => s + 1);
-  }
-
   function handlePreviousCount() {
     setCount((c) => c - step);
   }
@@ -28,25 +20,44 @@ function Counter() {
     setCount((c) => c + step);
   }
 
+  function handleSlide(e) {
+    setStep(Number(e.target.value));
+  }
+
+  function handleClick() {
+    setCount(0);
+    setStep(1);
+  }
+
   return (
     <div className="counter">
       <div className="step">
-        <button onClick={handlePreviousStep}>-</button>
-        <div>Step: {step}</div>
-        <button onClick={handleNextStep}>+</button>
+        <input
+          type="range"
+          min="0"
+          max="10"
+          value={step}
+          onChange={(e) => handleSlide(e)}
+        />
+        {step}
       </div>
       <div className="count">
         <button onClick={handlePreviousCount}>-</button>
-        <div>Count: {count}</div>
+        <input
+          type="text"
+          value={count}
+          onChange={(e) => setCount(Number(e.target.value))}
+        ></input>
         <button onClick={handleNextCount}>+</button>
       </div>
       {`${count !== 0 ? Math.abs(count) : ""} ${
         count > 0
-          ? "day from now is"
+          ? "days from today is"
           : count === 0
           ? "Today is"
           : "days ago was"
       } ${date.toDateString()}`}
+      {count !== 0 ? <button onClick={handleClick}>Reset</button> : ""}
     </div>
   );
 }

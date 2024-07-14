@@ -22,3 +22,7 @@ code {
 .count {
   display: flex;
 }
+
+.step {
+  align-items: center;
+}
