@@ -19,18 +19,35 @@ const faqs = [
 function App() {
   return (
     <div className="accordion">
-      {faqs.map((faq, i) => (
-        <Accordion title={faq.title} text={faq.text} num={i + 1} />
-      ))}
+      <Accordion />
     </div>
   );
 }
 
-function Accordion({ title, text, num }) {
-  const [isOpen, setIsOpen] = useState(false);
+function Accordion() {
+  const [curOpen, setCurOpen] = useState(null);
+  return faqs.map((faq, i) => (
+    <AccordionItem
+      title={faq.title}
+      num={i + 1}
+      onOpen={setCurOpen}
+      curOpen={curOpen}
+      key={faq.title}
+    >
+      {faq.text}
+    </AccordionItem>
+  ));
+}
+
+function AccordionItem({ title, num, onOpen, curOpen, children }) {
+  const isOpen = curOpen === num;
 
   function handleOpen() {
-    setIsOpen(!isOpen);
+    if (isOpen) {
+      onOpen(null);
+      return;
+    }
+    onOpen(num);
   }
 
   return (
@@ -38,7 +55,7 @@ function Accordion({ title, text, num }) {
       <p className="number">{num < 9 ? `0${num}` : num}</p>
       <p className="text">{title}</p>
       <p className="icon">{isOpen ? "-" : "+"}</p>
-      {isOpen ? <div className="content-box">{text}</div> : ""}
+      {isOpen ? <div className="content-box">{children}</div> : ""}
     </div>
   );
 }
