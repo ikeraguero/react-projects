@@ -16,11 +16,16 @@ function App() {
         {" "}
         How did your friend like the service?{" "}
       </ServiceTip>
-      <PayTotal bill={bill} percentages={[percentage1, percentage2]} />
-      <Reset
-        setBill={setBill}
-        setPercentages={[setPercentage1, setPercentage2]}
-      />
+      {bill > 0 && (
+        <>
+          <PayTotal bill={bill} percentages={[percentage1, percentage2]} />
+          <Reset
+            setBill={setBill}
+            setPercentages={[setPercentage1, setPercentage2]}
+          />{" "}
+          :
+        </>
+      )}
     </div>
   );
 }
