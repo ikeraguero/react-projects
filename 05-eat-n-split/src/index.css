@@ -171,3 +171,7 @@ form h2 {
 .hidden {
   display: none;
 }
+
+.active {
+  background-color: var(--color-medium);
+}
