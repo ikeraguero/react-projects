@@ -53,6 +53,7 @@ const average = (arr) =>
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
 
   return (
     <>
@@ -62,10 +63,13 @@ export default function App() {
         <ResultsFound movies={movies} />
       </NavBar>
       <Main>
-        <MoviesBox>
+        <Box>
           <MoviesList movies={movies} />
-        </MoviesBox>
-        <WatchedMoviesBox />
+        </Box>
+        <Box>
+          <WatchedMoviesSummary watched={watched} />
+          <WatchedMoviesList watched={watched} />
+        </Box>
       </Main>
     </>
   );
@@ -110,18 +114,15 @@ function Main({ children }) {
   return <main className="main">{children}</main>;
 }
 
-function MoviesBox({ children }) {
-  const [isOpen1, setIsOpen1] = useState(true);
+function Box({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen1((open) => !open)}
-      >
-        {isOpen1 ? "–" : "+"}
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "–" : "+"}
       </button>
-      {isOpen1 && children}
+      {isOpen && children}
     </div>
   );
 }
@@ -145,57 +146,37 @@ function MoviesList({ movies }) {
   );
 }
 
-function WatchedMoviesBox() {
-  const [isOpen2, setIsOpen2] = useState(true);
+function WatchedMoviesSummary({ watched }) {
+  const avgImdbRating = average(
+    watched.map((movie) => movie.imdbRating)
+  ).toFixed(2);
+  const avgUserRating = average(
+    watched.map((movie) => movie.userRating)
+  ).toFixed(2);
+  const avgRuntime = average(watched.map((movie) => movie.runtime)).toFixed(2);
+
   return (
-    <div className="box">
-      <WatchedMoviesBoxToggleButton isOpen2={isOpen2} setIsOpen2={setIsOpen2} />
-      <WatchedMoviesSummary isOpen2={isOpen2} />
+    <div className="summary">
+      <h2>Movies you watched</h2>
+      <div>
+        <p>
+          <span>#️⃣</span>
+          <span>{watched.length} movies</span>
+        </p>
+        <p>
+          <span>⭐️</span>
+          <span>{avgImdbRating}</span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span>{avgUserRating}</span>
+        </p>
+        <p>
+          <span>⏳</span>
+          <span>{avgRuntime} min</span>
+        </p>
+      </div>
     </div>
-  );
-}
-
-function WatchedMoviesBoxToggleButton({ isOpen2, setIsOpen2 }) {
-  return (
-    <button className="btn-toggle" onClick={() => setIsOpen2((open) => !open)}>
-      {isOpen2 ? "–" : "+"}
-    </button>
-  );
-}
-
-function WatchedMoviesSummary({ isOpen2 }) {
-  const [watched, setWatched] = useState(tempWatchedData);
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
-
-  return (
-    isOpen2 && (
-      <>
-        <div className="summary">
-          <h2>Movies you watched</h2>
-          <div>
-            <p>
-              <span>#️⃣</span>
-              <span>{watched.length} movies</span>
-            </p>
-            <p>
-              <span>⭐️</span>
-              <span>{avgImdbRating}</span>
-            </p>
-            <p>
-              <span>🌟</span>
-              <span>{avgUserRating}</span>
-            </p>
-            <p>
-              <span>⏳</span>
-              <span>{avgRuntime} min</span>
-            </p>
-          </div>
-        </div>
-        <WatchedMoviesList watched={watched} />
-      </>
-    )
   );
 }
 
