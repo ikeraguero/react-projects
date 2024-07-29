@@ -56,11 +56,19 @@ const KEY = "12a4c454";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(function () {
-    fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=brazil`)
-      .then((res) => res.json())
-      .then((data) => setMovies(data.Search));
+    async function handleSetMovies() {
+      setIsLoading(true);
+      const res = await fetch(
+        `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=brazil`
+      );
+      const data = await res.json();
+      setIsLoading(false);
+      setMovies(data.Search);
+    }
+    handleSetMovies();
   }, []);
 
   return (
@@ -71,9 +79,7 @@ export default function App() {
         <ResultsFound movies={movies} />
       </NavBar>
       <Main>
-        <Box>
-          <MoviesList movies={movies} />
-        </Box>
+        <Box>{isLoading ? <Loader /> : <MoviesList movies={movies} />}</Box>
         <Box>
           <WatchedMoviesSummary watched={watched} />
           <WatchedMoviesList watched={watched} />
@@ -152,6 +158,10 @@ function MoviesList({ movies }) {
       ))}
     </ul>
   );
+}
+
+function Loader() {
+  return <p className="loader">LOADING...</p>;
 }
 
 function WatchedMoviesSummary({ watched }) {
