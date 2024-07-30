@@ -40,7 +40,6 @@ export default function StarRating({
 
   function handleClick(rating) {
     setRating(rating);
-    onSetRating(rating);
   }
 
   return (
@@ -70,7 +69,15 @@ export default function StarRating({
   );
 }
 
-function Star({ onClick, rating, full, onHoverIn, onHoverOut, color, size }) {
+export function Star({
+  onClick,
+  rating,
+  full,
+  onHoverIn,
+  onHoverOut,
+  color,
+  size,
+}) {
   const starStyle = {
     width: `${size}px`,
     height: `${size}px`,
