@@ -61,19 +61,28 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(null);
+  const [rating, setRating] = useState(null);
   const [error, setError] = useState("");
 
   function onSelectMovie(movieId) {
-    if (movieId === isSelected) {
-      setIsSelected(null);
-      return;
-    }
-    setIsSelected(movieId);
+    setIsSelected((selectedId) => (movieId === selectedId ? null : movieId));
   }
 
   function onCloseMovie() {
     setIsSelected(null);
   }
+
+  function addWatchedMovie(movie) {
+    setWatched((watched) => [...watched, movie]);
+    setIsSelected(null);
+  }
+
+  useEffect(
+    function () {
+      console.log(watched);
+    },
+    [watched]
+  );
 
   useEffect(
     function () {
@@ -130,7 +139,14 @@ export default function App() {
         </Box>
         <Box>
           {isSelected ? (
-            <MovieDetails isSelected={isSelected} onCloseMovie={onCloseMovie} />
+            <MovieDetails
+              isSelected={isSelected}
+              onCloseMovie={onCloseMovie}
+              onMovieAdd={addWatchedMovie}
+              watched={watched}
+              onSetRating={setRating}
+              rating={rating}
+            />
           ) : (
             <WatchedMoviesSummary watched={watched} />
           )}
@@ -233,10 +249,20 @@ function ErrorMessage({ message }) {
   );
 }
 
-function MovieDetails({ isSelected, onCloseMovie }) {
+function MovieDetails({
+  isSelected,
+  onCloseMovie,
+  onMovieAdd,
+  watched,
+  onSetRating,
+  rating,
+}) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
+  const isOnWatchedList = watched.some((movie) => movie.imdbID === isSelected);
+
+  /// Displaying info in the page porpuses
   const {
     Title: title,
     Released: released,
@@ -252,6 +278,7 @@ function MovieDetails({ isSelected, onCloseMovie }) {
   useEffect(
     function () {
       async function getMovieDetails() {
+        onSetRating(null);
         setIsLoading(true);
         const res = await fetch(
           `http://www.omdbapi.com/?apikey=${KEY}&i=${isSelected}`
@@ -288,7 +315,16 @@ function MovieDetails({ isSelected, onCloseMovie }) {
 
       <section>
         <div className="rating">
-          <StarRating maxRating={10} size={24} />
+          {isOnWatchedList ? (
+            <span>You rated this movie {movie.rating}</span>
+          ) : (
+            <>
+              <StarRating maxRating={10} size={24} onSetRating={onSetRating} />
+              <button className="btn-add" onClick={() => onMovieAdd(movie)}>
+                + Add to list
+              </button>
+            </>
+          )}
         </div>
         <p>
           <em>{plot}</em>
@@ -304,9 +340,9 @@ function WatchedMoviesSummary({ watched }) {
   const avgImdbRating = average(
     watched.map((movie) => movie.imdbRating)
   ).toFixed(2);
-  const avgUserRating = average(
-    watched.map((movie) => movie.userRating)
-  ).toFixed(2);
+  const avgUserRating = average(watched.map((movie) => movie.rating)).toFixed(
+    2
+  );
   const avgRuntime = average(watched.map((movie) => movie.runtime)).toFixed(2);
 
   return (

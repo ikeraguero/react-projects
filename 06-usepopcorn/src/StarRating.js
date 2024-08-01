@@ -40,6 +40,7 @@ export default function StarRating({
 
   function handleClick(rating) {
     setRating(rating);
+    onSetRating(rating);
   }
 
   return (
