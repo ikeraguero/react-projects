@@ -271,6 +271,7 @@ function MovieDetails({
   onMovieAdd,
   watched,
   onSetRating,
+  rating,
 }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -338,9 +339,13 @@ function MovieDetails({
           ) : (
             <>
               <StarRating maxRating={10} size={24} onSetRating={onSetRating} />
-              <button className="btn-add" onClick={() => onMovieAdd(movie)}>
-                + Add to list
-              </button>
+              {rating ? (
+                <button className="btn-add" onClick={() => onMovieAdd(movie)}>
+                  + Add to list
+                </button>
+              ) : (
+                ""
+              )}
             </>
           )}
         </div>
