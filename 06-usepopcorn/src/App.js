@@ -90,19 +90,14 @@ export default function App() {
 
   useEffect(
     function () {
-      console.log(watched);
-    },
-    [watched]
-  );
-
-  useEffect(
-    function () {
+      const controller = new AbortController();
       async function fetchMovies() {
         try {
           setIsLoading(true);
           setError("");
           const res = await fetch(
-            `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           if (!res.ok)
@@ -113,11 +108,14 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not found!");
           setMovies(data.Search);
         } catch (err) {
-          setError(err.message);
+          if (err.name !== "AbortError") {
+            setError(err.message);
+          }
         } finally {
           setIsLoading(false);
         }
       }
+      onCloseMovie();
 
       if (query.length < 3) {
         setMovies([]);
@@ -125,6 +123,10 @@ export default function App() {
         return;
       }
       fetchMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -291,6 +293,19 @@ function MovieDetails({
     Director: director,
   } = movie;
 
+  useEffect(function () {
+    function callback(e) {
+      if (e.code === "Escape") {
+        onCloseMovie();
+      }
+    }
+    document.addEventListener("keydown", callback);
+
+    return function () {
+      document.removeEventListener("keydown", callback);
+    };
+  }, []);
+
   useEffect(
     function () {
       async function getMovieDetails() {
@@ -306,6 +321,18 @@ function MovieDetails({
       getMovieDetails();
     },
     [isSelected]
+  );
+
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `MOVIE | ${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+      };
+    },
+    [title]
   );
 
   return isLoading ? (
