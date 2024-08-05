@@ -1,26 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useMovies } from "./useMovies.js";
+import { useLocalStorageState } from "./useLocalStorageState.js";
 import "./index.css";
 import StarRating from "./StarRating.js";
+import { useKey } from "./useKey.js";
+
+const KEY = "12a4c454";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const KEY = "12a4c454";
-
 export default function App() {
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(null);
   const [rating, setRating] = useState(null);
-  const [error, setError] = useState("");
-  const [watched, setWatched] = useState(function () {
-    const storedWatched = localStorage.getItem("watched");
-    return JSON.parse(storedWatched);
-  });
-
+  const { movies, isLoading, error } = useMovies(query);
+  const [watched, setWatched] = useLocalStorageState([], "watched");
   function onSelectMovie(movieId) {
     setIsSelected((selectedId) => (movieId === selectedId ? null : movieId));
+    setRating(null);
   }
 
   function onCloseMovie() {
@@ -42,56 +40,6 @@ export default function App() {
       watched.filter((watchedMovie) => watchedMovie.imdbID !== movie.imdbID)
     );
   }
-
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
-
-  useEffect(
-    function () {
-      const controller = new AbortController();
-      async function fetchMovies() {
-        try {
-          setIsLoading(true);
-          setError("");
-          const res = await fetch(
-            `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`,
-            { signal: controller.signal }
-          );
-
-          if (!res.ok)
-            throw new Error("Something went wrong with fetching movies");
-
-          const data = await res.json();
-
-          if (data.Response === "False") throw new Error("Movie not found!");
-          setMovies(data.Search);
-        } catch (err) {
-          if (err.name !== "AbortError") {
-            setError(err.message);
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      }
-      onCloseMovie();
-
-      if (query.length < 3) {
-        setMovies([]);
-        setError("");
-        return;
-      }
-      fetchMovies();
-
-      return function () {
-        controller.abort();
-      };
-    },
-    [query]
-  );
 
   return (
     <>
@@ -151,6 +99,19 @@ function Logo() {
 }
 
 function SearchBar({ query, setQuery }) {
+  const inputEl = useRef(null);
+
+  useEffect(function () {
+    inputEl.current.focus();
+  }, []);
+
+  useKey("Enter", function () {
+    if (document.activeElement !== inputEl.current) {
+      setQuery("");
+      inputEl.current.focus();
+    }
+  });
+
   return (
     <input
       className="search"
@@ -158,6 +119,7 @@ function SearchBar({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
@@ -242,6 +204,8 @@ function MovieDetails({
 
   const isOnWatchedList = watched.some((movie) => movie.imdbID === isSelected);
 
+  const clicksBeforeRating = useRef(0);
+
   /// Displaying info in the page porpuses
   const {
     Title: title,
@@ -255,18 +219,19 @@ function MovieDetails({
     Director: director,
   } = movie;
 
-  useEffect(function () {
-    function callback(e) {
-      if (e.code === "Escape") {
-        onCloseMovie();
+  useEffect(
+    function () {
+      if (!rating) {
+        clicksBeforeRating.current = 0;
+        return;
       }
-    }
-    document.addEventListener("keydown", callback);
+      clicksBeforeRating.current++;
+      console.log(clicksBeforeRating);
+    },
+    [rating]
+  );
 
-    return function () {
-      document.removeEventListener("keydown", callback);
-    };
-  }, []);
+  useKey("escape", onCloseMovie);
 
   useEffect(
     function () {
@@ -282,7 +247,7 @@ function MovieDetails({
       }
       getMovieDetails();
     },
-    [isSelected]
+    [isSelected, onSetRating]
   );
 
   useEffect(
@@ -329,7 +294,10 @@ function MovieDetails({
             <>
               <StarRating maxRating={10} size={24} onSetRating={onSetRating} />
               {rating ? (
-                <button className="btn-add" onClick={() => onMovieAdd(movie)}>
+                <button
+                  className="btn-add"
+                  onClick={() => onMovieAdd({ ...movie, clicksBeforeRating })}
+                >
                   + Add to list
                 </button>
               ) : (
