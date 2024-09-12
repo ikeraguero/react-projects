@@ -1,9 +1,11 @@
 import { useEffect, useReducer } from "react";
-import DateCounter from "./DateCounter.js";
+
 import Header from "./Header.js";
 import Main from "./Main.js";
 import Loader from "./Loader.js";
 import Error from "./Error.js";
+import StartScreen from "./StartScreen.js";
+import Question from "./Question.js";
 import "./index.css";
 
 export default function App() {
@@ -15,9 +17,12 @@ export default function App() {
   function reducer(state, action) {
     switch (action.type) {
       case "dataReceived":
+        console.log("Ok");
         return { status: "ready", questions: action.payload };
       case "dataFailed":
         return { status: "failed", questions: [] };
+      case "startQuiz":
+        return { ...state, status: "active" };
       default:
         return state;
     }
@@ -45,6 +50,8 @@ export default function App() {
       <Main>
         {state.status === "loading" && <Loader />}
         {state.status === "failed" && <Error />}
+        {state.status === "ready" && <StartScreen dispatch={dispatch} />}
+        {state.status === "active" && <Question questions={state.questions} />}
       </Main>
     </div>
   );
