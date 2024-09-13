@@ -12,15 +12,16 @@ export default function App() {
   const initalState = {
     status: "loading",
     questions: [],
+    index: 0,
   };
 
   function reducer(state, action) {
     switch (action.type) {
       case "dataReceived":
         console.log("Ok");
-        return { status: "ready", questions: action.payload };
+        return { ...state, status: "ready", questions: action.payload };
       case "dataFailed":
-        return { status: "failed", questions: [] };
+        return { ...state, status: "failed", questions: [] };
       case "startQuiz":
         return { ...state, status: "active" };
       default:
@@ -29,6 +30,9 @@ export default function App() {
   }
 
   const [state, dispatch] = useReducer(reducer, initalState);
+  const { status, questions, index } = state;
+  console.log(status, questions, index);
+
   useEffect(function () {
     async function getData() {
       try {
@@ -48,10 +52,10 @@ export default function App() {
     <div className="app">
       <Header />
       <Main>
-        {state.status === "loading" && <Loader />}
-        {state.status === "failed" && <Error />}
-        {state.status === "ready" && <StartScreen dispatch={dispatch} />}
-        {state.status === "active" && <Question questions={state.questions} />}
+        {status === "loading" && <Loader />}
+        {status === "failed" && <Error />}
+        {status === "ready" && <StartScreen dispatch={dispatch} />}
+        {status === "active" && <Question question={questions[index]} />}
       </Main>
     </div>
   );
