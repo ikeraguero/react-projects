@@ -13,6 +13,8 @@ export default function App() {
     status: "loading",
     questions: [],
     index: 0,
+    points: 0,
+    answer: null,
   };
 
   function reducer(state, action) {
@@ -24,14 +26,18 @@ export default function App() {
         return { ...state, status: "failed", questions: [] };
       case "startQuiz":
         return { ...state, status: "active" };
+      case "newAnswer":
+        return {
+          ...state,
+          answer: action.payload,
+        };
       default:
         return state;
     }
   }
 
   const [state, dispatch] = useReducer(reducer, initalState);
-  const { status, questions, index } = state;
-  console.log(status, questions, index);
+  const { status, questions, index, points, answer } = state;
 
   useEffect(function () {
     async function getData() {
@@ -55,7 +61,13 @@ export default function App() {
         {status === "loading" && <Loader />}
         {status === "failed" && <Error />}
         {status === "ready" && <StartScreen dispatch={dispatch} />}
-        {status === "active" && <Question question={questions[index]} />}
+        {status === "active" && (
+          <Question
+            question={questions[index]}
+            dispatch={dispatch}
+            answer={answer}
+          />
+        )}
       </Main>
     </div>
   );
