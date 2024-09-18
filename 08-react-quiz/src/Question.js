@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Options from "./Options";
+import NextButton from "./NextButton";
 
 function Question({ question, dispatch, answer }) {
   return (
