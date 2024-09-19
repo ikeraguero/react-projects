@@ -1,6 +1,5 @@
 function NextButton({ dispatch }) {
   function handleNextQuestion() {
-    console.log("Teste");
     dispatch({ type: "nextQuestion" });
   }
   return (

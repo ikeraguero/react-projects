@@ -20,16 +20,22 @@ export default function App() {
   function reducer(state, action) {
     switch (action.type) {
       case "dataReceived":
-        console.log("Ok");
         return { ...state, status: "ready", questions: action.payload };
       case "dataFailed":
         return { ...state, status: "failed", questions: [] };
       case "startQuiz":
         return { ...state, status: "active" };
       case "newAnswer":
+        console.log(
+          action.payload === state.questions[state.index]["correctOption"]
+        );
         return {
           ...state,
           answer: action.payload,
+          points:
+            action.payload === state.questions[state.index]["correctOption"]
+              ? state.points + state.questions[state.index]["points"]
+              : state.points,
         };
       case "nextQuestion":
         return { ...state, index: state.index + 1, answer: null };
@@ -56,6 +62,7 @@ export default function App() {
     getData();
   }, []);
 
+  console.log(state);
   return (
     <div className="app">
       <Header />
