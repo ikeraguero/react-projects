@@ -47,6 +47,14 @@ export default function App() {
             state.points > state.highscore ? state.points : state.highscore,
           status: "finished",
         };
+      case "restart":
+        return {
+          ...state,
+          index: 0,
+          points: 0,
+          answer: null,
+          status: "active",
+        };
       default:
         return state;
     }
@@ -111,6 +119,7 @@ export default function App() {
             points={points}
             maxPoints={maxPoints}
             highscore={highscore}
+            dispatch={dispatch}
           />
         )}
       </Main>
