@@ -31,6 +31,8 @@ export default function App() {
           ...state,
           answer: action.payload,
         };
+      case "nextQuestion":
+        return { ...state, index: state.index + 1, answer: null };
       default:
         return state;
     }

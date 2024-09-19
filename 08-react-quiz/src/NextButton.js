@@ -1,7 +1,13 @@
-function NextButton() {
+function NextButton({ dispatch }) {
+  function handleNextQuestion() {
+    console.log("Teste");
+    dispatch({ type: "nextQuestion" });
+  }
   return (
     <div>
-      <button className="btn-ui">Next Question</button>
+      <button className="btn btn-ui" onClick={() => handleNextQuestion()}>
+        Next Question
+      </button>
     </div>
   );
 }

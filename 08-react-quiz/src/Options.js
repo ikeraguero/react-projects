@@ -1,7 +1,4 @@
-function Options({ question, dispatch, answer }) {
-  const hasAnswered = answer !== null ? true : false;
-  console.log(question.correctOption);
-
+function Options({ question, dispatch, hasAnswered }) {
   function handleAnswer(index) {
     dispatch({ type: "newAnswer", payload: index });
   }
