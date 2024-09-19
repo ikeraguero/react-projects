@@ -2,8 +2,7 @@ import { useState } from "react";
 import Options from "./Options";
 import NextButton from "./NextButton";
 
-function Question({ question, dispatch, answer }) {
-  const hasAnswered = answer !== null ? true : false;
+function Question({ question, dispatch, answer, hasAnswered }) {
   return (
     <>
       <h4>{question.question}</h4>
@@ -11,8 +10,8 @@ function Question({ question, dispatch, answer }) {
         question={question}
         dispatch={dispatch}
         hasAnswered={hasAnswered}
+        answer={answer}
       />
-      {hasAnswered && <NextButton dispatch={dispatch} />}
     </>
   );
 }

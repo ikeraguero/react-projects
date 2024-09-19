@@ -1,11 +1,14 @@
 import { useEffect, useReducer } from "react";
 
-import Header from "./Header.js";
+import Header from "./components/Header.js";
 import Main from "./Main.js";
-import Loader from "./Loader.js";
-import Error from "./Error.js";
-import StartScreen from "./StartScreen.js";
-import Question from "./Question.js";
+import Loader from "./components/Loader.js";
+import Error from "./components/Error.js";
+import StartScreen from "./components/StartScreen.js";
+import Question from "./components/Question.js";
+import Progress from "./components/Progress.js";
+import NextButton from "./components/NextButton.js";
+import FinishScreen from "./components/FinishScreen.js";
 import "./index.css";
 
 export default function App() {
@@ -14,6 +17,7 @@ export default function App() {
     questions: [],
     index: 0,
     points: 0,
+    highscore: 0,
     answer: null,
   };
 
@@ -26,9 +30,6 @@ export default function App() {
       case "startQuiz":
         return { ...state, status: "active" };
       case "newAnswer":
-        console.log(
-          action.payload === state.questions[state.index]["correctOption"]
-        );
         return {
           ...state,
           answer: action.payload,
@@ -39,13 +40,24 @@ export default function App() {
         };
       case "nextQuestion":
         return { ...state, index: state.index + 1, answer: null };
+      case "finishQuiz":
+        return {
+          ...state,
+          highscore:
+            state.points > state.highscore ? state.points : state.highscore,
+          status: "finished",
+        };
       default:
         return state;
     }
   }
 
   const [state, dispatch] = useReducer(reducer, initalState);
-  const { status, questions, index, points, answer } = state;
+  const { status, questions, index, points, highscore, answer } = state;
+  const hasAnswered = answer !== null ? true : false;
+  const maxPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
+
+  console.log(maxPoints);
 
   useEffect(function () {
     async function getData() {
@@ -71,10 +83,34 @@ export default function App() {
         {status === "failed" && <Error />}
         {status === "ready" && <StartScreen dispatch={dispatch} />}
         {status === "active" && (
-          <Question
-            question={questions[index]}
-            dispatch={dispatch}
-            answer={answer}
+          <>
+            <Progress
+              questions={questions}
+              index={index}
+              answer={answer}
+              maxPoints={maxPoints}
+              points={points}
+            />
+            <Question
+              question={questions[index]}
+              dispatch={dispatch}
+              answer={answer}
+              hasAnswered={hasAnswered}
+            />
+            {hasAnswered && (
+              <NextButton
+                dispatch={dispatch}
+                index={index}
+                questions={questions}
+              />
+            )}
+          </>
+        )}
+        {status === "finished" && (
+          <FinishScreen
+            points={points}
+            maxPoints={maxPoints}
+            highscore={highscore}
           />
         )}
       </Main>

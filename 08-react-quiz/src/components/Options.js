@@ -1,5 +1,8 @@
-function Options({ question, dispatch, hasAnswered }) {
+function Options({ question, dispatch, hasAnswered, answer }) {
   function handleAnswer(index) {
+    if (hasAnswered) {
+      return;
+    }
     dispatch({ type: "newAnswer", payload: index });
   }
   return (
@@ -13,7 +16,7 @@ function Options({ question, dispatch, hasAnswered }) {
                 ? "correct"
                 : "wrong"
               : " "
-          }
+          } ${answer === i ? "answer" : ""}
           }`}
           onClick={() => handleAnswer(i)}
         >
