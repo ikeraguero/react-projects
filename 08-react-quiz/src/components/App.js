@@ -1,23 +1,27 @@
 import { useEffect, useReducer } from "react";
 
-import Header from "./components/Header.js";
-import Main from "./Main.js";
-import Loader from "./components/Loader.js";
-import Error from "./components/Error.js";
-import StartScreen from "./components/StartScreen.js";
-import Question from "./components/Question.js";
-import Progress from "./components/Progress.js";
-import NextButton from "./components/NextButton.js";
-import FinishScreen from "./components/FinishScreen.js";
-import "./index.css";
+import Header from "./Header.js";
+import Main from "../Main.js";
+import Loader from "./Loader.js";
+import Error from "./Error.js";
+import StartScreen from "./StartScreen.js";
+import Question from "./Question.js";
+import Progress from "./Progress.js";
+import NextButton from "./NextButton.js";
+import FinishScreen from "./FinishScreen.js";
+import Footer from "./Footer.js";
+import Timer from "./Timer.js";
+import "../index.css";
 
 export default function App() {
+  const SECS_PER_QUESTION = 40;
   const initalState = {
     status: "loading",
     questions: [],
     index: 0,
     points: 0,
     highscore: 0,
+    secondsRemaining: 0,
     answer: null,
   };
 
@@ -28,7 +32,11 @@ export default function App() {
       case "dataFailed":
         return { ...state, status: "failed", questions: [] };
       case "startQuiz":
-        return { ...state, status: "active" };
+        return {
+          ...state,
+          status: "active",
+          secondsRemaining: state.questions.length * SECS_PER_QUESTION,
+        };
       case "newAnswer":
         return {
           ...state,
@@ -53,7 +61,15 @@ export default function App() {
           index: 0,
           points: 0,
           answer: null,
+          secondsRemaining: state.questions.length * SECS_PER_QUESTION,
           status: "active",
+        };
+      case "tick":
+        console.log("tick");
+        return {
+          ...state,
+          secondsRemaining: state.secondsRemaining - 1,
+          status: state.secondsRemaining - 1 === 0 ? "finished" : state.status,
         };
       default:
         return state;
@@ -61,11 +77,17 @@ export default function App() {
   }
 
   const [state, dispatch] = useReducer(reducer, initalState);
-  const { status, questions, index, points, highscore, answer } = state;
+  const {
+    status,
+    questions,
+    index,
+    points,
+    highscore,
+    secondsRemaining,
+    answer,
+  } = state;
   const hasAnswered = answer !== null ? true : false;
   const maxPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
-
-  console.log(maxPoints);
 
   useEffect(function () {
     async function getData() {
@@ -82,7 +104,6 @@ export default function App() {
     getData();
   }, []);
 
-  console.log(state);
   return (
     <div className="app">
       <Header />
@@ -105,13 +126,16 @@ export default function App() {
               answer={answer}
               hasAnswered={hasAnswered}
             />
-            {hasAnswered && (
-              <NextButton
-                dispatch={dispatch}
-                index={index}
-                questions={questions}
-              />
-            )}
+            <Footer>
+              <Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
+              {hasAnswered && (
+                <NextButton
+                  dispatch={dispatch}
+                  index={index}
+                  questions={questions}
+                />
+              )}
+            </Footer>
           </>
         )}
         {status === "finished" && (

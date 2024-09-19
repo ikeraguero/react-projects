@@ -1,5 +1,4 @@
 function NextButton({ dispatch, index, questions }) {
-  console.log(index, questions.length);
   function handleNextQuestion() {
     dispatch({ type: "nextQuestion" });
   }

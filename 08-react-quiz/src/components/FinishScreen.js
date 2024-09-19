@@ -1,4 +1,4 @@
-import RestartButton from "../RestartButton";
+import RestartButton from "./RestartButton";
 function FinishScreen({ points, maxPoints, highscore, dispatch }) {
   const percentage = points / maxPoints;
   return (
