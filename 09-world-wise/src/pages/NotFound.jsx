@@ -1,8 +1,8 @@
-import NavPage from "../components/NavPage";
+import PageNav from "../components/PageNav";
 function NotFound() {
   return (
     <>
-      <NavPage />
+      <PageNav />
       <div>Page not found!</div>;
     </>
   );

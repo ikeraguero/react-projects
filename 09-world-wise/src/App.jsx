@@ -3,9 +3,10 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./index.css";
 import Homepage from "./pages/Homepage";
-import Products from "./pages/Products";
+import Product from "./pages/Product";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -13,8 +14,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Homepage />} />
-        <Route path="/products" element={<Products />} />
+        <Route path="/products" element={<Product />} />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
