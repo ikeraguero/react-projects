@@ -13,7 +13,7 @@ import CitiesList from "./components/CitiesList";
 import CountryList from "./components/CountryList";
 import City from "./components/City";
 import Form from "./components/Form";
-import { CityProvider } from "./contexts/CityProvider";
+import { CityProvider } from "./contexts/CityContext";
 
 function App() {
   return (
