@@ -3,6 +3,13 @@ import styles from "./City.module.css";
 import { useCities } from "../contexts/CityContext";
 import { useEffect } from "react";
 
+const formatDate = (date) =>
+  new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(date));
+
 function City() {
   const { id } = useParams();
   const { getCity, currentCity } = useCities();
@@ -27,7 +34,7 @@ function City() {
 
       <div className={styles.row}>
         <h6>You went to {cityName} on</h6>
-        <p>{date}</p>
+        <p>{formatDate(date)}</p>
       </div>
 
       {notes && (
