@@ -30,7 +30,7 @@ function CityProvider({ children }) {
     try {
       setIsLoading(true);
       const res = await fetch(`${BASE_URL}/cities/${cityId}`);
-      console.log(res);
+      console.log(`${BASE_URL}/cities/${cityId}`);
       if (!res) throw new Error();
       const data = await res.json();
       if (!data) throw new Error();
