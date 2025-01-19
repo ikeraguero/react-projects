@@ -1,8 +1,7 @@
+import { type } from "@testing-library/user-event/dist/type";
 import { useEffect } from "react";
-import { useQuiz } from "../context/QuizContext";
 
-function Timer() {
-  const { dispatch, secondsRemaining } = useQuiz();
+function Timer({ dispatch, secondsRemaining }) {
   if (secondsRemaining === 0) dispatch({ type: "finish" });
 
   const minutes = Math.floor(secondsRemaining / 60);
