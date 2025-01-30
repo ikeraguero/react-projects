@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useCallback, useContext, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CitiesContext = createContext();
@@ -56,17 +56,20 @@ export function CitiesProvider({ children }) {
     fetchCities();
   }, []);
 
-  async function getCity(id) {
-    if (id === currentCity.id) return;
-    dispatch({ type: "loading" });
-    try {
-      const res = await fetch(`${BASE_URL}/cities/${id}`);
-      const data = await res.json();
-      dispatch({ type: "city/loaded", payload: data });
-    } catch {
-      alert("There was an error fetching the city...");
-    }
-  }
+  const getCity = useCallback(
+    async function getCity(id) {
+      if (id === currentCity.id) return;
+      dispatch({ type: "loading" });
+      try {
+        const res = await fetch(`${BASE_URL}/cities/${id}`);
+        const data = await res.json();
+        dispatch({ type: "city/loaded", payload: data });
+      } catch {
+        alert("There was an error fetching the city...");
+      }
+    },
+    [currentCity.id]
+  );
 
   async function createCity(data) {
     dispatch({ type: "loading" });
